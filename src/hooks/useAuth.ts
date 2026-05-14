@@ -1,6 +1,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import type { Session, User } from '@supabase/supabase-js';
 import { supabase, supabaseEnvError } from '../lib/supabase';
+import { queryClient } from '../lib/queryClient';
 
 interface AuthContextValue {
   session: Session | null;
@@ -25,13 +26,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!mounted) return;
       setSession(data.session);
       setLoading(false);
+      if (data.session?.user) {
+        void queryClient.invalidateQueries({ queryKey: ['business-access'] });
+      }
     });
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+    } = supabase.auth.onAuthStateChange((event, nextSession) => {
       setSession(nextSession);
       setLoading(false);
+      if (event === 'SIGNED_OUT') {
+        queryClient.clear();
+        return;
+      }
+      if (nextSession?.user) {
+        void queryClient.invalidateQueries({ queryKey: ['business-access'] });
+      }
     });
 
     return () => {
@@ -44,6 +55,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (supabaseEnvError) throw new Error(supabaseEnvError);
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
+    await queryClient.invalidateQueries({ queryKey: ['business-access'] });
   }, []);
 
   const signUp = useCallback(async (email: string, password: string, fullName?: string) => {
@@ -69,6 +81,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signOut = useCallback(async () => {
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
+    queryClient.clear();
   }, []);
 
   const value = useMemo<AuthContextValue>(

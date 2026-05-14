@@ -3,7 +3,8 @@ import autoTable from 'jspdf-autotable';
 import type { Business, MonthlyReport, ReportFilters } from '../types/models';
 import { formatCurrency } from './formatCurrency';
 import { formatDate, formatMonthYear } from './formatDate';
-import { paymentMethodLabels, paymentStatusLabels } from './calculateTransaction';
+import { paymentStatusLabels, reportPaymentMethodLabels } from './calculateTransaction';
+import { serviceDisplayName } from './serviceLabels';
 
 function slugMonth(month: number, year: number) {
   return formatMonthYear(month, year).toLowerCase().replace(/\s+/g, '-');
@@ -71,11 +72,11 @@ export function exportMonthlyReportPdf(
       item.receipt_number || '-',
       formatDate(item.date_in),
       item.customer_name_snapshot,
-      item.service_name_snapshot,
+      serviceDisplayName(item.service_code_snapshot, item.service_name_snapshot),
       `${item.quantity} ${item.unit_type_snapshot}`,
       formatCurrency(item.total_price),
       paymentStatusLabels[item.payment_status],
-      paymentMethodLabels[item.payment_method],
+      reportPaymentMethodLabels[item.payment_method],
       item.notes || '-',
     ]),
     theme: 'grid',

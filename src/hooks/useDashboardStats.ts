@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
 import type { DashboardStats, LaundryTransaction } from '../types/models';
 import { getMonthRange } from '../utils/formatDate';
+import { serviceDisplayName } from '../utils/serviceLabels';
 
 export function useDashboardStats(businessId: string | null, month: number, year: number) {
   return useQuery({
@@ -38,8 +39,11 @@ export function useDashboardStats(businessId: string | null, month: number, year
       const methodCounts = new Map<string, number>();
       const serviceCounts = new Map<string, number>();
       transactions.forEach((item) => {
-        methodCounts.set(item.payment_method, (methodCounts.get(item.payment_method) ?? 0) + 1);
-        serviceCounts.set(item.service_name_snapshot, (serviceCounts.get(item.service_name_snapshot) ?? 0) + 1);
+        if (item.payment_status === 'paid' && item.payment_method !== 'not_selected') {
+          methodCounts.set(item.payment_method, (methodCounts.get(item.payment_method) ?? 0) + 1);
+        }
+        const serviceName = serviceDisplayName(item.service_code_snapshot, item.service_name_snapshot);
+        serviceCounts.set(serviceName, (serviceCounts.get(serviceName) ?? 0) + 1);
       });
 
       const topPaymentMethod =

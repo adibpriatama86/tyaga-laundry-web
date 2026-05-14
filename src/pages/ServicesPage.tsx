@@ -8,6 +8,7 @@ import { useBusinessAccess } from '../hooks/useBusinessAccess';
 import { useServices, useUpdateService } from '../hooks/useServices';
 import { durationLabels } from '../utils/calculateTransaction';
 import { formatCurrency } from '../utils/formatCurrency';
+import { serviceDisplayName } from '../utils/serviceLabels';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { EmptyState } from '../components/ui/EmptyState';
@@ -145,7 +146,7 @@ export function ServicesPage() {
                   </div>
                   <div>
                     <p className="text-xs font-bold uppercase text-primary">{service.code}</p>
-                    <h2 className="text-base font-bold text-ink">{service.name}</h2>
+                    <h2 className="text-base font-bold text-ink">{serviceDisplayName(service.code, service.name)}</h2>
                     <p className="text-sm text-muted">
                       Unit {service.unit_type} · {service.is_active ? 'Aktif' : 'Nonaktif'}
                     </p>

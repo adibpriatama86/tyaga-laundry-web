@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { Download, PlusCircle } from 'lucide-react';
+import { CheckCircle2, Download, PlusCircle } from 'lucide-react';
 import type { LaundryTransaction, TransactionFilters as Filters } from '../types/models';
 import { useBusinessAccess } from '../hooks/useBusinessAccess';
 import { useServices } from '../hooks/useServices';
 import { useTransactions, useTransactionMutations } from '../hooks/useTransactions';
 import { getCurrentMonthYear } from '../utils/formatDate';
 import { Button } from '../components/ui/Button';
+import { Card } from '../components/ui/Card';
 import { ConfirmDialog } from '../components/ui/ConfirmDialog';
 import { EmptyState } from '../components/ui/EmptyState';
 import { Modal } from '../components/ui/Modal';
@@ -42,6 +43,7 @@ export function TransactionsPage() {
   const [page, setPage] = useState(1);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [editing, setEditing] = useState<LaundryTransaction | null>(null);
+  const [editSaved, setEditSaved] = useState(false);
   const [deleteIds, setDeleteIds] = useState<string[] | null>(null);
   const { showToast } = useToast();
 
@@ -53,11 +55,28 @@ export function TransactionsPage() {
     setSelectedIds([]);
   }, [filters]);
 
+  useEffect(() => {
+    if (searchParams.get('payment') === 'unpaid') {
+      setFilters((current) => ({ ...current, paymentStatus: 'unpaid' }));
+    }
+  }, [searchParams]);
+
   const rows = transactions.data?.transactions ?? [];
   const totalPages = Math.max(1, Math.ceil((transactions.data?.count ?? 0) / pageSize));
   const selectedOnPage = rows.filter((row) => selectedIds.includes(row.id)).length;
 
   const resetFilters = () => setFilters(defaultFilters());
+
+  const beginEdit = (transaction: LaundryTransaction) => {
+    setEditSaved(false);
+    setEditing(transaction);
+  };
+
+  const finishEdit = () => {
+    setEditing(null);
+    setEditSaved(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const toggleAll = () => {
     if (selectedOnPage === rows.length) {
@@ -116,7 +135,7 @@ export function TransactionsPage() {
           selectedIds={selectedIds}
           onToggle={toggleOne}
           onToggleAll={toggleAll}
-          onEdit={setEditing}
+          onEdit={beginEdit}
           onDelete={(transaction) => setDeleteIds([transaction.id])}
           onMarkPaid={(transaction) => void markPayment([transaction.id], 'paid')}
           onMarkUnpaid={(transaction) => void markPayment([transaction.id], 'unpaid')}
@@ -128,7 +147,7 @@ export function TransactionsPage() {
               transaction={transaction}
               selected={selectedIds.includes(transaction.id)}
               onToggle={toggleOne}
-              onEdit={setEditing}
+              onEdit={beginEdit}
               onDelete={(item) => setDeleteIds([item.id])}
               onMarkPaid={(item) => void markPayment([item.id], 'paid')}
               onMarkUnpaid={(item) => void markPayment([item.id], 'unpaid')}
@@ -145,7 +164,7 @@ export function TransactionsPage() {
     <div className="space-y-5">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <p className="text-sm font-semibold text-primary">Rekap dari nota manual</p>
+          <p className="text-sm font-semibold text-primary">Rekap bulanan</p>
           <h1 className="text-2xl font-bold text-ink lg:text-3xl">Rekap Transaksi</h1>
         </div>
         <div className="flex gap-2">
@@ -158,11 +177,28 @@ export function TransactionsPage() {
           <Link to="/monthly-report">
             <Button variant="secondary">
               <Download className="h-5 w-5" />
-              Export
+              Export Rekap
             </Button>
           </Link>
         </div>
       </div>
+
+      {editSaved ? (
+        <Card className="border-emerald-100 bg-emerald-50">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-3">
+              <CheckCircle2 className="h-6 w-6 text-emerald-600" />
+              <div>
+                <p className="font-bold text-emerald-800">Perubahan transaksi berhasil disimpan.</p>
+                <p className="text-sm text-emerald-700">Data rekap sudah diperbarui.</p>
+              </div>
+            </div>
+            <Button type="button" variant="secondary" onClick={() => setEditSaved(false)}>
+              Kembali ke Rekap
+            </Button>
+          </div>
+        </Card>
+      ) : null}
 
       <TransactionFilters
         filters={filters}
@@ -205,7 +241,7 @@ export function TransactionsPage() {
             services={services.data ?? []}
             mode="edit"
             transaction={editing}
-            onSuccess={() => setEditing(null)}
+            onSuccess={finishEdit}
           />
         ) : null}
       </Modal>
@@ -213,7 +249,7 @@ export function TransactionsPage() {
       <ConfirmDialog
         open={!!deleteIds?.length}
         title="Hapus transaksi?"
-        description="Data transaksi yang dihapus tidak bisa dikembalikan. Pastikan data nota manual tetap aman."
+        description="Data transaksi yang dihapus tidak bisa dikembalikan."
         confirmLabel="Hapus Data"
         loading={mutations.deleteTransactions.isPending}
         onConfirm={() => void deleteSelected()}

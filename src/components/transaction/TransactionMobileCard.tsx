@@ -3,6 +3,7 @@ import type { LaundryTransaction } from '../../types/models';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { formatDate } from '../../utils/formatDate';
 import { orderStatusLabels } from '../../utils/calculateTransaction';
+import { serviceDisplayName } from '../../utils/serviceLabels';
 import { Button } from '../ui/Button';
 import { PaymentMethodBadge } from './PaymentMethodBadge';
 import { PaymentStatusBadge } from './PaymentStatusBadge';
@@ -45,7 +46,9 @@ export function TransactionMobileCard({
       <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
         <div>
           <p className="text-xs text-muted">Layanan</p>
-          <p className="font-semibold text-ink">{transaction.service_name_snapshot}</p>
+          <p className="font-semibold text-ink">
+            {serviceDisplayName(transaction.service_code_snapshot, transaction.service_name_snapshot)}
+          </p>
         </div>
         <div>
           <p className="text-xs text-muted">Berat/Jumlah</p>
@@ -58,35 +61,37 @@ export function TransactionMobileCard({
           <p className="font-bold text-ink">{formatCurrency(transaction.total_price)}</p>
         </div>
         <div>
-          <p className="text-xs text-muted">Pesanan</p>
-          <p className="font-semibold text-ink">{orderStatusLabels[transaction.order_status]}</p>
+          <p className="text-xs text-muted">Pembayaran</p>
+          <PaymentStatusBadge status={transaction.payment_status} />
         </div>
       </div>
 
       {transaction.notes ? <p className="mt-3 rounded-lg bg-slate-50 p-3 text-xs text-muted">{transaction.notes}</p> : null}
 
       <div className="mt-4 flex flex-wrap gap-2">
-        <PaymentStatusBadge status={transaction.payment_status} />
         <PaymentMethodBadge method={transaction.payment_method} />
+        <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-muted">
+          Pesanan: {orderStatusLabels[transaction.order_status]}
+        </span>
       </div>
 
       <div className="mt-4 grid grid-cols-3 gap-2">
-        <Button type="button" variant="secondary" size="sm" onClick={() => onEdit(transaction)}>
+        <Button type="button" variant="secondary" size="sm" onClick={() => onEdit(transaction)} title="Edit">
           <Edit3 className="h-4 w-4" />
           Edit
         </Button>
         {transaction.payment_status === 'paid' ? (
-          <Button type="button" variant="secondary" size="sm" onClick={() => onMarkUnpaid(transaction)}>
+          <Button type="button" variant="secondary" size="sm" onClick={() => onMarkUnpaid(transaction)} title="Tandai Belum Lunas">
             <XCircle className="h-4 w-4" />
             Belum
           </Button>
         ) : (
-          <Button type="button" variant="soft" size="sm" onClick={() => onMarkPaid(transaction)}>
+          <Button type="button" variant="soft" size="sm" onClick={() => onMarkPaid(transaction)} title="Tandai Lunas">
             <CheckCircle2 className="h-4 w-4" />
             Lunas
           </Button>
         )}
-        <Button type="button" variant="ghost" size="sm" onClick={() => onDelete(transaction)}>
+        <Button type="button" variant="ghost" size="sm" onClick={() => onDelete(transaction)} title="Hapus">
           <Trash2 className="h-4 w-4 text-red-600" />
           Hapus
         </Button>

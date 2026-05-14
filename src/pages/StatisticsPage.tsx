@@ -62,11 +62,16 @@ export function StatisticsPage() {
   }, [month, report.data?.transactions, year]);
 
   const serviceCounts = useMemo(
-    () =>
-      (report.data?.byService ?? []).map((item) => ({
+    () => {
+      const sorted = [...(report.data?.byService ?? [])].sort((a, b) => b.count - a.count);
+      const topServices = sorted.slice(0, 5).map((item) => ({
         layanan: item.label,
         jumlah: item.count,
-      })),
+      }));
+      const otherCount = sorted.slice(5).reduce((sum, item) => sum + item.count, 0);
+
+      return otherCount > 0 ? [...topServices, { layanan: 'Lainnya', jumlah: otherCount }] : topServices;
+    },
     [report.data?.byService],
   );
 
@@ -165,12 +170,22 @@ export function StatisticsPage() {
               <h2 className="mb-4 text-base font-bold text-ink">Jumlah transaksi per layanan</h2>
               <div className="h-80">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={serviceCounts} margin={{ left: 0, right: 12, top: 8, bottom: 48 }}>
+                  <BarChart
+                    data={serviceCounts}
+                    layout="vertical"
+                    margin={{ left: 8, right: 16, top: 8, bottom: 8 }}
+                  >
                     <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
-                    <XAxis dataKey="layanan" tick={{ fontSize: 10 }} interval={0} angle={-25} textAnchor="end" height={70} />
-                    <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
+                    <XAxis type="number" allowDecimals={false} tick={{ fontSize: 11 }} />
+                    <YAxis
+                      type="category"
+                      dataKey="layanan"
+                      width={116}
+                      tick={{ fontSize: 11 }}
+                      interval={0}
+                    />
                     <Tooltip />
-                    <Bar dataKey="jumlah" fill="#38BDF8" radius={[6, 6, 0, 0]} />
+                    <Bar dataKey="jumlah" fill="#38BDF8" radius={[0, 6, 6, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>

@@ -3,7 +3,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
-import { LockKeyhole, Sparkles } from 'lucide-react';
+import { LogIn, UserPlus } from 'lucide-react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../hooks/useAuth';
 import { useBusinessAccess } from '../hooks/useBusinessAccess';
 import { Button } from '../components/ui/Button';
@@ -26,6 +27,13 @@ export function LoginPage() {
   const access = useBusinessAccess();
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const queryClient = useQueryClient();
+  const isSignUp = mode === 'signup';
+  const AuthIcon = isSignUp ? UserPlus : LogIn;
+  const authTitle = isSignUp ? 'Daftar Akun Baru' : 'Masuk';
+  const authCopy = isSignUp
+    ? 'Buat akun untuk baru untuk mengakses aplikasi.'
+    : 'Masuk menggunakan akun yang sudah memiliki akses.';
 
   const {
     register,
@@ -46,12 +54,13 @@ export function LoginPage() {
     try {
       if (mode === 'signup') {
         await signUp(values.email, values.password, values.fullName);
-        showToast('Akun berhasil dibuat. Jika belum memiliki akses, hubungi admin untuk ditambahkan ke dashboard Tyaga Laundry.', 'success');
+        showToast('Akun berhasil dibuat. Jika belum memiliki akses, hubungi admin agar akun ditambahkan ke dashboard Tyaga Laundry.', 'success');
         setMode('login');
         return;
       }
 
       await signIn(values.email, values.password);
+      await queryClient.invalidateQueries({ queryKey: ['business-access'] });
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Login gagal. Cek email dan password.';
       setFormError(message.includes('Invalid login credentials') ? 'Email atau password tidak sesuai.' : message);
@@ -61,21 +70,22 @@ export function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-canvas px-4 py-8">
       <div className="w-full max-w-md">
-        <div className="mb-6 text-center">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-white shadow-soft">
-            <Sparkles className="h-7 w-7" />
-          </div>
-          <h1 className="text-2xl font-bold text-ink">Tyaga Laundry</h1>
+        <div className="mb-8 text-center">
+          <img
+            src="/logo-tyaga-horizontal.png"
+            alt="Tyaga Laundry"
+            className="mx-auto h-28 w-auto max-w-[280px] object-contain sm:h-32 sm:max-w-[340px]"
+          />
         </div>
 
         <Card animated className="p-5">
           <div className="mb-5 flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-soft text-primary">
-              <LockKeyhole className="h-5 w-5" />
+              <AuthIcon className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-ink">{mode === 'login' ? 'Masuk' : 'Sign Up Demo/Dev'}</h2>
-              <p className="text-sm text-muted">Gunakan email dan password Supabase Auth.</p>
+              <h2 className="text-lg font-bold text-ink">{authTitle}</h2>
+              <p className="text-sm text-muted">{authCopy}</p>
             </div>
           </div>
 
@@ -104,10 +114,10 @@ export function LoginPage() {
             className="mt-5 w-full text-center text-sm font-semibold text-primary hover:text-blue-700"
             onClick={() => {
               setFormError('');
-              setMode(mode === 'login' ? 'signup' : 'login');
+              setMode(isSignUp ? 'login' : 'signup');
             }}
           >
-            {mode === 'login' ? 'Buat akun demo/dev' : 'Sudah punya akun? Masuk'}
+            {isSignUp ? 'Sudah punya akun? Masuk' : 'Buat akun baru'}
           </button>
         </Card>
       </div>

@@ -28,6 +28,15 @@ Tyaga Laundry adalah web app rekap bulanan transaksi laundry dari nota manual. A
 - Layanan & Harga untuk edit nama, kode, unit, status aktif, dan harga per durasi.
 - Pengaturan profil bisnis dan info akun.
 
+## Revisi Manual Setelah Evaluasi
+
+- Halaman Profil UMKM ditambahkan untuk menjelaskan konteks objek UMKM.
+- Halaman Panduan ditambahkan untuk membantu pemilik memahami alur penggunaan.
+- Dashboard dirapikan agar tidak memiliki tombol dan akses yang berulang.
+- Filter Rekap Transaksi di mobile disederhanakan agar lebih mudah digunakan.
+- Insight metode pembayaran disesuaikan agar hanya menghitung transaksi lunas.
+- Success flow tambah/edit transaksi diperbaiki agar user langsung melihat feedback.
+
 ## Fitur yang Sengaja Tidak Dibuat
 
 - Upload foto nota.
@@ -123,4 +132,16 @@ Akun dummy dibuat melalui Supabase Auth atau halaman Sign Up. Aplikasi tidak men
 - Export PDF berhasil.
 - Export Excel berhasil.
 - Edit harga layanan berhasil.
+- Profil UMKM dapat dibuka dari sidebar dan menu Lainnya.
+- Panduan dapat dibuka dari sidebar dan menu Lainnya.
+- Dashboard tidak lagi memiliki tombol CTA duplikat.
+- Card Belum Lunas mengarah ke Rekap Transaksi dengan filter unpaid.
+- Filter Lanjutan di mobile default collapsed.
+- Setelah tambah/edit transaksi, halaman scroll ke atas dan success action area muncul.
+- Active menu hanya memilih halaman yang sedang dibuka.
+- Pindah halaman selalu dimulai dari posisi atas.
+- Rekap Transaksi memakai label “Cari”, bukan “Search”.
+- Tooltip aksi transaksi muncul.
+- Grafik statistik tetap readable.
+- `npm run build` berhasil.
 - Build production berhasil dengan `npm run build`.

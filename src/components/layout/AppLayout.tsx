@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Sidebar } from './Sidebar';
 import { BottomNav } from './BottomNav';
 import { MobileMoreMenu } from './MobileMoreMenu';
+import { ScrollToTop } from './ScrollToTop';
 import { useBusinessAccess } from '../../hooks/useBusinessAccess';
 
 const pageTitles: Record<string, string> = {
@@ -13,6 +14,8 @@ const pageTitles: Record<string, string> = {
   '/monthly-report': 'Rekap Bulanan',
   '/statistics': 'Statistik',
   '/services': 'Layanan & Harga',
+  '/profile-umkm': 'Profil UMKM',
+  '/guide': 'Panduan',
   '/settings': 'Pengaturan',
 };
 
@@ -24,10 +27,16 @@ export function AppLayout() {
 
   return (
     <div className="min-h-screen bg-canvas">
+      <ScrollToTop />
       <Sidebar />
       <div className="lg:pl-72">
         <header className="sticky top-0 z-30 border-b border-line bg-white/90 px-4 py-3 backdrop-blur lg:hidden">
-          <p className="text-xs font-semibold uppercase tracking-wide text-primary">{business?.name || 'Tyaga Laundry'}</p>
+          <div className="flex items-center gap-2">
+            <img src="/icon-tyaga.png" alt="Tyaga Laundry" className="h-7 w-7 object-contain" />
+            <p className="text-xs font-semibold uppercase tracking-wide text-primary">
+              {business?.name || 'Tyaga Laundry'}
+            </p>
+          </div>
           <h1 className="text-lg font-bold text-ink">{title}</h1>
         </header>
         <motion.main

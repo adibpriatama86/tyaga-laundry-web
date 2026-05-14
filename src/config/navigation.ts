@@ -1,5 +1,7 @@
 import {
   BarChart3,
+  BookOpenText,
+  Building2,
   Home,
   LayoutGrid,
   PlusCircle,
@@ -15,6 +17,8 @@ export const desktopNavigation = [
   { label: 'Rekap Bulanan', path: '/monthly-report', icon: LayoutGrid },
   { label: 'Statistik', path: '/statistics', icon: BarChart3 },
   { label: 'Layanan & Harga', path: '/services', icon: Tags },
+  { label: 'Profil UMKM', path: '/profile-umkm', icon: Building2 },
+  { label: 'Panduan', path: '/guide', icon: BookOpenText },
   { label: 'Pengaturan', path: '/settings', icon: Settings },
 ];
 
@@ -28,5 +32,7 @@ export const mobileNavigation = [
 export const moreNavigation = [
   { label: 'Rekap Bulanan', path: '/monthly-report', icon: LayoutGrid },
   { label: 'Layanan & Harga', path: '/services', icon: Tags },
+  { label: 'Profil UMKM', path: '/profile-umkm', icon: Building2 },
+  { label: 'Panduan', path: '/guide', icon: BookOpenText },
   { label: 'Pengaturan', path: '/settings', icon: Settings },
 ];

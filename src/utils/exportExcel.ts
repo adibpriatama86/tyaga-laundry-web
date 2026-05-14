@@ -2,7 +2,8 @@ import * as XLSX from 'xlsx';
 import type { Business, MonthlyReport, ReportFilters } from '../types/models';
 import { formatCurrency } from './formatCurrency';
 import { formatDate, formatMonthYear } from './formatDate';
-import { paymentMethodLabels, paymentStatusLabels } from './calculateTransaction';
+import { paymentStatusLabels, reportPaymentMethodLabels } from './calculateTransaction';
+import { serviceDisplayName } from './serviceLabels';
 
 function slugMonth(month: number, year: number) {
   return formatMonthYear(month, year).toLowerCase().replace(/\s+/g, '-');
@@ -35,12 +36,12 @@ export function exportMonthlyReportExcel(
         'Nomor Nota': item.receipt_number || '',
         Tanggal: formatDate(item.date_in),
         Pelanggan: item.customer_name_snapshot,
-        Layanan: item.service_name_snapshot,
+        Layanan: serviceDisplayName(item.service_code_snapshot, item.service_name_snapshot),
         'Berat/Jumlah': `${item.quantity} ${item.unit_type_snapshot}`,
         'Harga Satuan': Number(item.price_per_unit),
         Total: Number(item.total_price),
         'Status Bayar': paymentStatusLabels[item.payment_status],
-        'Metode Pembayaran': paymentMethodLabels[item.payment_method],
+        'Metode Pembayaran': reportPaymentMethodLabels[item.payment_method],
         Catatan: item.notes || '',
       })),
     ),

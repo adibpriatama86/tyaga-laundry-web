@@ -6,6 +6,7 @@ import type {
   ServiceWithPrices,
 } from '../types/models';
 import { addDays } from './formatDate';
+import { serviceDisplayName } from './serviceLabels';
 
 export const durationLabels: Record<DurationType, string> = {
   one_day: '1 Hari',
@@ -24,6 +25,11 @@ export const paymentMethodLabels: Record<PaymentMethod, string> = {
   qris: 'QRIS',
   bank_transfer: 'Transfer Bank',
   not_selected: 'Belum Dipilih',
+};
+
+export const reportPaymentMethodLabels: Record<PaymentMethod, string> = {
+  ...paymentMethodLabels,
+  not_selected: 'Belum Dipilih / Belum Lunas',
 };
 
 export const orderStatusLabels = {
@@ -72,7 +78,7 @@ export function summarizeTransactions(transactions: LaundryTransaction[]): Month
 
     const serviceKey = item.service_code_snapshot || item.service_id;
     const service = byService.get(serviceKey) ?? {
-      label: item.service_name_snapshot,
+      label: serviceDisplayName(item.service_code_snapshot, item.service_name_snapshot),
       total: 0,
       count: 0,
     };
@@ -90,7 +96,7 @@ export function summarizeTransactions(transactions: LaundryTransaction[]): Month
     averageTransaction: totalTransactions ? totalRevenue / totalTransactions : 0,
     byPaymentMethod: Array.from(byPayment.entries()).map(([key, value]) => ({
       key,
-      label: paymentMethodLabels[key],
+      label: reportPaymentMethodLabels[key],
       ...value,
     })),
     byService: Array.from(byService.entries()).map(([key, value]) => ({

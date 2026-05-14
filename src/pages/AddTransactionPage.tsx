@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { CheckCircle2, ReceiptText } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useBusinessAccess } from '../hooks/useBusinessAccess';
 import { useServices } from '../hooks/useServices';
 import { TransactionForm } from '../components/transaction/TransactionForm';
@@ -14,12 +14,18 @@ export function AddTransactionPage() {
   const services = useServices(businessId);
   const [saved, setSaved] = useState(false);
 
+  useEffect(() => {
+    if (saved) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [saved]);
+
   if (!businessId) return null;
 
   return (
     <div className="space-y-5">
       <div>
-        <p className="text-sm font-semibold text-primary">Input dari nota manual</p>
+        <p className="text-sm font-semibold text-primary">Transaksi baru</p>
         <h1 className="text-2xl font-bold text-ink lg:text-3xl">Tambah Transaksi</h1>
       </div>
 
@@ -29,8 +35,8 @@ export function AddTransactionPage() {
             <div className="flex items-center gap-3">
               <CheckCircle2 className="h-6 w-6 text-emerald-600" />
               <div>
-                <p className="font-bold text-emerald-800">Transaksi berhasil ditambahkan.</p>
-                <p className="text-sm text-emerald-700">Lanjut input nota lain atau cek rekap transaksi.</p>
+                <p className="font-bold text-emerald-800">Transaksi berhasil disimpan.</p>
+                <p className="text-sm text-emerald-700">Lanjut input transaksi lain atau cek rekap.</p>
               </div>
             </div>
             <div className="flex gap-2">

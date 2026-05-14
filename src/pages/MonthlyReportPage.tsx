@@ -4,11 +4,17 @@ import type { ReportFilters } from '../types/models';
 import { useBusinessAccess } from '../hooks/useBusinessAccess';
 import { useMonthlyReport } from '../hooks/useMonthlyReport';
 import { useServices } from '../hooks/useServices';
-import { durationLabels, paymentMethodLabels, paymentStatusLabels } from '../utils/calculateTransaction';
+import {
+  durationLabels,
+  paymentMethodLabels,
+  paymentStatusLabels,
+  reportPaymentMethodLabels,
+} from '../utils/calculateTransaction';
 import { exportMonthlyReportExcel } from '../utils/exportExcel';
 import { exportMonthlyReportPdf } from '../utils/exportPdf';
 import { formatCurrency } from '../utils/formatCurrency';
 import { formatDate, formatMonthYear, getCurrentMonthYear, monthNames } from '../utils/formatDate';
+import { serviceDisplayName } from '../utils/serviceLabels';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { EmptyState } from '../components/ui/EmptyState';
@@ -107,7 +113,7 @@ export function MonthlyReportPage() {
             <option value="all">Semua</option>
             {(services.data ?? []).map((service) => (
               <option key={service.id} value={service.id}>
-                {service.name}
+                {serviceDisplayName(service.code, service.name)}
               </option>
             ))}
           </Select>
@@ -191,14 +197,16 @@ export function MonthlyReportPage() {
                       <td className="px-3 py-3 font-semibold text-ink">{transaction.receipt_number || '-'}</td>
                       <td className="px-3 py-3 text-muted">{formatDate(transaction.date_in)}</td>
                       <td className="px-3 py-3 text-muted">{transaction.customer_name_snapshot}</td>
-                      <td className="px-3 py-3 text-muted">{transaction.service_name_snapshot}</td>
+                      <td className="px-3 py-3 text-muted">
+                        {serviceDisplayName(transaction.service_code_snapshot, transaction.service_name_snapshot)}
+                      </td>
                       <td className="px-3 py-3 text-muted">{durationLabels[transaction.duration_type]}</td>
                       <td className="px-3 py-3 text-muted">
                         {transaction.quantity} {transaction.unit_type_snapshot}
                       </td>
                       <td className="px-3 py-3 font-bold text-ink">{formatCurrency(transaction.total_price)}</td>
                       <td className="px-3 py-3 text-muted">{paymentStatusLabels[transaction.payment_status]}</td>
-                      <td className="px-3 py-3 text-muted">{paymentMethodLabels[transaction.payment_method]}</td>
+                      <td className="px-3 py-3 text-muted">{reportPaymentMethodLabels[transaction.payment_method]}</td>
                       <td className="px-3 py-3 text-muted">{transaction.notes || '-'}</td>
                     </tr>
                   ))}
@@ -210,7 +218,7 @@ export function MonthlyReportPage() {
       ) : (
         <EmptyState
           title="Belum ada data rekap pada periode ini"
-          description="Pilih periode lain atau tambahkan transaksi dari nota manual terlebih dahulu."
+          description="Pilih periode lain atau tambahkan transaksi terlebih dahulu."
         />
       )}
     </div>

@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { AlertCircle, Download, PlusCircle, ReceiptText, WalletCards } from 'lucide-react';
+import { AlertCircle, ArrowUpRight, Download, PlusCircle, ReceiptText, WalletCards } from 'lucide-react';
 import { useBusinessAccess } from '../hooks/useBusinessAccess';
 import { useDashboardStats } from '../hooks/useDashboardStats';
 import { useMonthlyReport } from '../hooks/useMonthlyReport';
@@ -78,13 +78,13 @@ export function DashboardPage() {
         <>
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             <Card animated>
-              <p className="text-sm font-semibold text-muted">Total Transaksi Bulan Ini</p>
+              <p className="text-sm font-semibold text-muted">Transaksi Bulan Ini</p>
               <p className="mt-3 text-3xl font-bold text-ink">
                 <AnimatedNumber value={summary.totalTransactions} />
               </p>
             </Card>
             <Card animated>
-              <p className="text-sm font-semibold text-muted">Total Pendapatan Bulan Ini</p>
+              <p className="text-sm font-semibold text-muted">Pendapatan Bulan Ini</p>
               <p className="mt-3 text-3xl font-bold text-ink">
                 <AnimatedNumber value={summary.totalRevenue} formatter={formatCurrency} />
               </p>
@@ -92,16 +92,20 @@ export function DashboardPage() {
             <button
               type="button"
               onClick={() => navigate('/transactions?payment=unpaid')}
-              className="rounded-lg border border-line bg-white p-4 text-left shadow-sm transition hover:border-amber-200 hover:bg-amber-50"
+              className="group cursor-pointer rounded-lg border border-line bg-white p-4 text-left shadow-sm transition hover:border-primary/30 hover:bg-primary-soft"
             >
-              <p className="text-sm font-semibold text-muted">Belum Lunas</p>
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-sm font-semibold text-muted">Belum Lunas</p>
+                <ArrowUpRight className="h-4 w-4 text-amber-500 opacity-70 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              </div>
               <p className="mt-3 text-3xl font-bold text-amber-600">
                 <AnimatedNumber value={summary.unpaidCount} />
               </p>
               <p className="mt-1 text-xs font-semibold text-amber-700">{formatCurrency(summary.unpaidTotal)}</p>
+              <p className="mt-2 hidden text-xs font-semibold text-amber-700 lg:block">Lihat detail</p>
             </button>
             <Card animated>
-              <p className="text-sm font-semibold text-muted">Rata-rata Nilai Transaksi</p>
+              <p className="text-sm font-semibold text-muted">Rata-rata Transaksi</p>
               <p className="mt-3 text-3xl font-bold text-ink">
                 <AnimatedNumber value={summary.averageTransaction} formatter={formatCurrency} />
               </p>
@@ -109,14 +113,10 @@ export function DashboardPage() {
           </div>
 
           {summary.unpaidCount > 0 ? (
-            <button
-              type="button"
-              onClick={() => navigate('/transactions?payment=unpaid')}
-              className="flex w-full items-center gap-3 rounded-lg border border-amber-200 bg-amber-50 p-4 text-left text-amber-800 transition hover:bg-amber-100"
-            >
+            <div className="flex w-full items-center gap-3 rounded-lg border border-amber-100 bg-amber-50/70 p-3 text-amber-800">
               <AlertCircle className="h-5 w-5 shrink-0" />
-              <span className="text-sm font-semibold">Ada {summary.unpaidCount} transaksi belum lunas pada bulan ini.</span>
-            </button>
+              <span className="text-sm font-semibold">Ada {summary.unpaidCount} transaksi yang belum lunas pada bulan ini.</span>
+            </div>
           ) : null}
 
           <div className="grid gap-4 lg:grid-cols-2">
@@ -128,7 +128,7 @@ export function DashboardPage() {
                 <div>
                   <p className="text-sm text-muted">Metode pembayaran terbanyak</p>
                   <p className="text-lg font-bold text-ink">
-                    {summary.topPaymentMethod ? paymentMethodLabels[summary.topPaymentMethod] : '-'}
+                    {summary.topPaymentMethod ? paymentMethodLabels[summary.topPaymentMethod] : 'Belum ada pembayaran lunas'}
                   </p>
                 </div>
               </div>
@@ -140,40 +140,16 @@ export function DashboardPage() {
                 </div>
                 <div>
                   <p className="text-sm text-muted">Layanan paling sering digunakan</p>
-                  <p className="text-lg font-bold text-ink">{summary.topService || '-'}</p>
+                  <p className="text-lg font-bold text-ink">{summary.topService || 'Belum ada layanan'}</p>
                 </div>
               </div>
             </Card>
-          </div>
-
-          <div className="grid gap-3 sm:grid-cols-3">
-            <Link to="/transactions/new">
-              <Button className="w-full" size="lg">
-                <PlusCircle className="h-5 w-5" />
-                Tambah Transaksi
-              </Button>
-            </Link>
-            <Button type="button" variant="secondary" size="lg" loading={report.isLoading} onClick={exportCurrentMonth}>
-              <Download className="h-5 w-5" />
-              Export Rekap Bulan Ini
-            </Button>
-            <Button type="button" variant="soft" size="lg" onClick={() => navigate('/transactions?payment=unpaid')}>
-              Lihat Belum Lunas
-            </Button>
           </div>
         </>
       ) : (
         <EmptyState
           title="Belum ada transaksi bulan ini"
-          description="Masukkan data dari nota manual saat pemilik ingin mulai rekap bulanan."
-          action={
-            <Link to="/transactions/new">
-              <Button>
-                <PlusCircle className="h-5 w-5" />
-                Tambah Transaksi
-              </Button>
-            </Link>
-          }
+          description="Tambahkan transaksi pertama untuk mulai melihat ringkasan bulan ini."
         />
       )}
     </div>

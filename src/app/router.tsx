@@ -10,6 +10,8 @@ import { AddTransactionPage } from '../pages/AddTransactionPage';
 import { MonthlyReportPage } from '../pages/MonthlyReportPage';
 import { StatisticsPage } from '../pages/StatisticsPage';
 import { ServicesPage } from '../pages/ServicesPage';
+import { ProfileUmkmPage } from '../pages/ProfileUmkmPage';
+import { GuidePage } from '../pages/GuidePage';
 import { SettingsPage } from '../pages/SettingsPage';
 import { NotFoundPage } from '../pages/NotFoundPage';
 
@@ -43,6 +45,8 @@ export const router = createBrowserRouter([
       { path: 'monthly-report', element: <MonthlyReportPage /> },
       { path: 'statistics', element: <StatisticsPage /> },
       { path: 'services', element: <ServicesPage /> },
+      { path: 'profile-umkm', element: <ProfileUmkmPage /> },
+      { path: 'guide', element: <GuidePage /> },
       { path: 'settings', element: <SettingsPage /> },
     ],
   },

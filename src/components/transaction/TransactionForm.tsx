@@ -2,7 +2,7 @@ import { useEffect, useMemo } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { ArrowRight, Save } from 'lucide-react';
+import { Save } from 'lucide-react';
 import type { LaundryTransaction, ServiceWithPrices, TransactionFormValues } from '../../types/models';
 import {
   calculateEstimatedDone,
@@ -15,6 +15,7 @@ import {
 } from '../../utils/calculateTransaction';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { toDateInputValue } from '../../utils/formatDate';
+import { serviceDisplayName } from '../../utils/serviceLabels';
 import { useTransactionMutations } from '../../hooks/useTransactions';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
@@ -199,7 +200,7 @@ export function TransactionForm({ businessId, services, mode = 'create', transac
               <Select label="Jenis layanan" error={errors.service_id?.message} {...register('service_id')}>
                 {activeServices.map((service) => (
                   <option key={service.id} value={service.id}>
-                    {service.name}
+                    {serviceDisplayName(service.code, service.name)}
                   </option>
                 ))}
               </Select>
@@ -292,7 +293,9 @@ export function TransactionForm({ businessId, services, mode = 'create', transac
             <div className="mt-4 space-y-3 text-sm">
               <div className="flex items-center justify-between gap-3">
                 <span className="text-muted">Layanan</span>
-                <span className="text-right font-semibold text-ink">{selectedService?.name || '-'}</span>
+                <span className="text-right font-semibold text-ink">
+                  {selectedService ? serviceDisplayName(selectedService.code, selectedService.name) : '-'}
+                </span>
               </div>
               <div className="flex items-center justify-between gap-3">
                 <span className="text-muted">Durasi</span>
@@ -325,11 +328,6 @@ export function TransactionForm({ businessId, services, mode = 'create', transac
             <Save className="h-5 w-5" />
             {mode === 'edit' ? 'Simpan Perubahan' : 'Simpan Transaksi'}
           </Button>
-          {mode === 'create' ? (
-            <p className="mt-3 flex items-center justify-center gap-2 text-xs text-muted">
-              Nota manual tetap disimpan seperti biasa <ArrowRight className="h-3 w-3" /> web ini membantu rekap bulanan.
-            </p>
-          ) : null}
         </div>
       </div>
     </form>
