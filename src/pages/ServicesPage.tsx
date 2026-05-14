@@ -18,7 +18,7 @@ import { Select } from '../components/ui/Select';
 import { Skeleton } from '../components/ui/Skeleton';
 import { useToast } from '../components/ui/Toast';
 
-const durations: DurationType[] = ['one_day', 'two_days', 'three_days', 'regular'];
+const durations: DurationType[] = ['one_day', 'two_days', 'three_days', 'four_days', 'five_days'];
 
 const serviceSchema = z.object({
   code: z.string().min(1, 'Kode layanan wajib diisi.'),
@@ -29,7 +29,8 @@ const serviceSchema = z.object({
     one_day: z.coerce.number().min(0, 'Harga tidak boleh negatif.'),
     two_days: z.coerce.number().min(0, 'Harga tidak boleh negatif.'),
     three_days: z.coerce.number().min(0, 'Harga tidak boleh negatif.'),
-    regular: z.coerce.number().min(0, 'Harga tidak boleh negatif.'),
+    four_days: z.coerce.number().min(0, 'Harga tidak boleh negatif.'),
+    five_days: z.coerce.number().min(0, 'Harga tidak boleh negatif.'),
   }),
 });
 
@@ -148,7 +149,7 @@ export function ServicesPage() {
                     <p className="text-xs font-bold uppercase text-primary">{service.code}</p>
                     <h2 className="text-base font-bold text-ink">{serviceDisplayName(service.code, service.name)}</h2>
                     <p className="text-sm text-muted">
-                      Unit {service.unit_type} · {service.is_active ? 'Aktif' : 'Nonaktif'}
+                      Unit {service.unit_type} - {service.is_active ? 'Aktif' : 'Nonaktif'}
                     </p>
                   </div>
                 </div>

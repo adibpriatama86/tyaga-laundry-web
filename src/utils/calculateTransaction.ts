@@ -12,7 +12,8 @@ export const durationLabels: Record<DurationType, string> = {
   one_day: '1 Hari',
   two_days: '2 Hari',
   three_days: '3 Hari',
-  regular: 'Reguler',
+  four_days: '4 Hari',
+  five_days: '5 Hari',
 };
 
 export const paymentStatusLabels = {
@@ -41,6 +42,8 @@ export const orderStatusLabels = {
 export function durationToDays(duration: DurationType): number {
   if (duration === 'one_day') return 1;
   if (duration === 'two_days') return 2;
+  if (duration === 'four_days') return 4;
+  if (duration === 'five_days') return 5;
   return 3;
 }
 
@@ -50,7 +53,9 @@ export function calculateEstimatedDone(dateIn: string, duration: DurationType): 
 
 export function getServicePrice(service: ServiceWithPrices | undefined, duration: DurationType): number {
   if (!service) return 0;
-  return Number(service.service_prices.find((price) => price.duration_type === duration)?.price ?? 0);
+  const exactPrice = service.service_prices.find((price) => price.duration_type === duration);
+  const fallbackPrice = service.service_prices.find((price) => price.duration_type === 'three_days') ?? service.service_prices[0];
+  return Number((exactPrice ?? fallbackPrice)?.price ?? 0);
 }
 
 export function calculateTotal(quantity: number, pricePerUnit: number): number {

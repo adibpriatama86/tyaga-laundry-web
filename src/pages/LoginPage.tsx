@@ -3,7 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
-import { LogIn, UserPlus } from 'lucide-react';
+import { Eye, EyeOff, LogIn, UserPlus } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../hooks/useAuth';
 import { useBusinessAccess } from '../hooks/useBusinessAccess';
@@ -23,6 +23,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 export function LoginPage() {
   const [mode, setMode] = useState<'login' | 'signup'>('login');
   const [formError, setFormError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const { signIn, signUp, user, envError } = useAuth();
   const access = useBusinessAccess();
   const navigate = useNavigate();
@@ -30,9 +31,9 @@ export function LoginPage() {
   const queryClient = useQueryClient();
   const isSignUp = mode === 'signup';
   const AuthIcon = isSignUp ? UserPlus : LogIn;
-  const authTitle = isSignUp ? 'Daftar Akun Baru' : 'Masuk';
+  const authTitle = isSignUp ? 'Buat Akun' : 'Masuk';
   const authCopy = isSignUp
-    ? 'Buat akun untuk baru untuk mengakses aplikasi.'
+    ? 'Daftarkan akun untuk mengakses dashboard Tyaga Laundry.'
     : 'Masuk menggunakan akun yang sudah memiliki akses.';
 
   const {
@@ -54,8 +55,9 @@ export function LoginPage() {
     try {
       if (mode === 'signup') {
         await signUp(values.email, values.password, values.fullName);
-        showToast('Akun berhasil dibuat. Jika belum memiliki akses, hubungi admin agar akun ditambahkan ke dashboard Tyaga Laundry.', 'success');
+        showToast('Akun berhasil dibuat. Jika belum memiliki akses, silakan hubungi admin Tyaga Laundry.', 'success');
         setMode('login');
+        setShowPassword(false);
         return;
       }
 
@@ -99,9 +101,19 @@ export function LoginPage() {
             <Input label="Email" type="email" autoComplete="email" error={errors.email?.message} {...register('email')} />
             <Input
               label="Password"
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
               error={errors.password?.message}
+              rightElement={
+                <button
+                  type="button"
+                  aria-label={showPassword ? 'Sembunyikan password' : 'Tampilkan password'}
+                  className="flex h-9 w-9 items-center justify-center rounded-lg text-muted transition hover:text-ink focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  onClick={() => setShowPassword((value) => !value)}
+                >
+                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                </button>
+              }
               {...register('password')}
             />
             <Button type="submit" size="lg" loading={isSubmitting} className="w-full">
@@ -114,10 +126,11 @@ export function LoginPage() {
             className="mt-5 w-full text-center text-sm font-semibold text-primary hover:text-blue-700"
             onClick={() => {
               setFormError('');
+              setShowPassword(false);
               setMode(isSignUp ? 'login' : 'signup');
             }}
           >
-            {isSignUp ? 'Sudah punya akun? Masuk' : 'Buat akun baru'}
+            {isSignUp ? 'Sudah punya akun? Masuk' : 'Buat akun'}
           </button>
         </Card>
       </div>

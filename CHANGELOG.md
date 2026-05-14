@@ -23,3 +23,12 @@ Revisi ini dilakukan agar aplikasi lebih sesuai dengan kebutuhan UMKM, lebih mud
 - Merapikan label pencarian, tombol export, dan tampilan tabel rekap.
 - Merapikan label metode pembayaran belum dipilih pada rekap bulanan.
 - Meningkatkan keterbacaan grafik statistik dan label layanan.
+
+## Revisi Final Sebelum Launch
+
+- Memperbaiki toggle tampil/sembunyikan password agar konsisten di form Masuk dan Buat Akun.
+- Memperbaiki checkbox harga satuan manual agar benar-benar mengunci atau membuka field Harga Satuan sesuai pilihan.
+- Menghapus durasi Reguler dan menggantinya dengan pilihan 1 sampai 5 hari.
+- Membersihkan wording demo/dev/development dari UI publik.
+- Merapikan microcopy halaman auth agar lebih siap digunakan sebagai versi publik.
+- Memastikan aplikasi tetap buildable sebelum publish.

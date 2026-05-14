@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
 import type { DurationType, Service, ServiceFormValues, ServicePrice, ServiceWithPrices } from '../types/models';
 
-const durations: DurationType[] = ['one_day', 'two_days', 'three_days', 'regular'];
+const durations: DurationType[] = ['one_day', 'two_days', 'three_days', 'four_days', 'five_days'];
 
 export function useServices(businessId: string | null) {
   return useQuery({
@@ -36,6 +36,7 @@ export function useServices(businessId: string | null) {
         ...service,
         service_prices: priceList
           .filter((price) => price.service_id === service.id)
+          .filter((price) => durations.includes(price.duration_type))
           .sort((a, b) => durations.indexOf(a.duration_type) - durations.indexOf(b.duration_type)),
       }));
     },

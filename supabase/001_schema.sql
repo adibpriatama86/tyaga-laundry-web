@@ -61,7 +61,7 @@ create table if not exists public.service_prices (
   is_active boolean default true,
   created_at timestamptz default now(),
   updated_at timestamptz default now(),
-  constraint service_prices_duration_type_check check (duration_type in ('one_day', 'two_days', 'three_days', 'regular')),
+  constraint service_prices_duration_type_check check (duration_type in ('one_day', 'two_days', 'three_days', 'four_days', 'five_days')),
   constraint service_prices_price_check check (price >= 0),
   constraint service_prices_service_duration_unique unique (service_id, duration_type)
 );
@@ -94,7 +94,7 @@ create table if not exists public.transactions (
   created_at timestamptz default now(),
   updated_at timestamptz default now(),
   constraint transactions_unit_type_check check (unit_type_snapshot in ('kg', 'item')),
-  constraint transactions_duration_type_check check (duration_type in ('one_day', 'two_days', 'three_days', 'regular')),
+  constraint transactions_duration_type_check check (duration_type in ('one_day', 'two_days', 'three_days', 'four_days', 'five_days')),
   constraint transactions_quantity_check check (quantity > 0),
   constraint transactions_price_per_unit_check check (price_per_unit >= 0),
   constraint transactions_total_price_check check (total_price >= 0),

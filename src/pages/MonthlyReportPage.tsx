@@ -152,7 +152,7 @@ export function MonthlyReportPage() {
                   <div key={item.key} className="flex items-center justify-between rounded-lg bg-slate-50 p-3 text-sm">
                     <span className="font-semibold text-ink">{item.label}</span>
                     <span className="text-muted">
-                      {item.count} transaksi · {formatCurrency(item.total)}
+                      {item.count} transaksi - {formatCurrency(item.total)}
                     </span>
                   </div>
                 ))}
@@ -165,7 +165,7 @@ export function MonthlyReportPage() {
                   <div key={item.key} className="flex items-center justify-between rounded-lg bg-slate-50 p-3 text-sm">
                     <span className="font-semibold text-ink">{item.label}</span>
                     <span className="text-muted">
-                      {item.count} transaksi · {formatCurrency(item.total)}
+                      {item.count} transaksi - {formatCurrency(item.total)}
                     </span>
                   </div>
                 ))}

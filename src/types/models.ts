@@ -1,5 +1,5 @@
 export type UnitType = 'kg' | 'item';
-export type DurationType = 'one_day' | 'two_days' | 'three_days' | 'regular';
+export type DurationType = 'one_day' | 'two_days' | 'three_days' | 'four_days' | 'five_days';
 export type PaymentStatus = 'paid' | 'unpaid';
 export type PaymentMethod = 'cash' | 'qris' | 'bank_transfer' | 'not_selected';
 export type OrderStatus = 'incoming' | 'process' | 'done';

@@ -12,7 +12,7 @@ export function NoAccessPage() {
         <EmptyState
           icon={<ShieldAlert className="h-7 w-7" />}
           title="Belum Ada Akses"
-          description="Akun Anda belum memiliki akses ke dashboard Tyaga Laundry. Silakan hubungi admin. Jika akun baru saja ditambahkan, silakan logout lalu login kembali."
+          description="Akun Anda belum memiliki akses ke dashboard Tyaga Laundry. Silakan hubungi admin."
           action={
             <Button type="button" variant="secondary" onClick={() => void signOut()}>
               <LogOut className="h-5 w-5" />
@@ -20,6 +20,7 @@ export function NoAccessPage() {
             </Button>
           }
         />
+        <p className="mt-3 text-center text-xs text-muted">Jika akun baru saja ditambahkan, silakan logout lalu login kembali.</p>
       </div>
     </div>
   );

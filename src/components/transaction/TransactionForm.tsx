@@ -30,7 +30,7 @@ const schema = z
     customer_name: z.string().min(1, 'Nama pelanggan wajib diisi.'),
     customer_phone: z.string().optional(),
     service_id: z.string().min(1, 'Jenis layanan wajib dipilih.'),
-    duration_type: z.enum(['one_day', 'two_days', 'three_days', 'regular']),
+    duration_type: z.enum(['one_day', 'two_days', 'three_days', 'four_days', 'five_days']),
     quantity: z.coerce.number().positive('Berat/jumlah harus lebih dari 0.'),
     price_per_unit: z.coerce.number().min(0, 'Harga satuan tidak boleh negatif.'),
     total_price: z.coerce.number().min(0, 'Total harga tidak boleh negatif.'),
@@ -62,6 +62,10 @@ const schema = z
     }
   });
 
+function normalizeDurationType(duration?: string | null): TransactionFormValues['duration_type'] {
+  return duration && duration in durationLabels ? (duration as TransactionFormValues['duration_type']) : 'three_days';
+}
+
 function transactionToValues(transaction?: LaundryTransaction): TransactionFormValues {
   return {
     receipt_number: transaction?.receipt_number ?? '',
@@ -69,7 +73,7 @@ function transactionToValues(transaction?: LaundryTransaction): TransactionFormV
     customer_name: transaction?.customer_name_snapshot ?? '',
     customer_phone: transaction?.customer_phone_snapshot ?? '',
     service_id: transaction?.service_id ?? '',
-    duration_type: transaction?.duration_type ?? 'three_days',
+    duration_type: normalizeDurationType(transaction?.duration_type),
     quantity: Number(transaction?.quantity ?? 1),
     price_per_unit: Number(transaction?.price_per_unit ?? 0),
     total_price: Number(transaction?.total_price ?? 0),
@@ -229,6 +233,9 @@ export function TransactionForm({ businessId, services, mode = 'create', transac
                 label="Harga satuan"
                 type="number"
                 min="0"
+                readOnly={!isManualPrice}
+                aria-readonly={!isManualPrice}
+                className="read-only:cursor-not-allowed read-only:bg-slate-50 read-only:text-slate-600"
                 error={errors.price_per_unit?.message}
                 {...register('price_per_unit', { valueAsNumber: true })}
               />
@@ -237,19 +244,26 @@ export function TransactionForm({ businessId, services, mode = 'create', transac
                 type="number"
                 min="0"
                 disabled={!isManualTotal}
+                className="disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-600"
                 error={errors.total_price?.message}
                 {...register('total_price', { valueAsNumber: true })}
               />
             </div>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
-              <label className="flex items-center gap-2 rounded-lg bg-slate-50 p-3 text-sm font-semibold text-ink">
-                <input type="checkbox" {...register('is_manual_price')} />
-                Harga satuan diubah manual
-              </label>
-              <label className="flex items-center gap-2 rounded-lg bg-slate-50 p-3 text-sm font-semibold text-ink">
-                <input type="checkbox" {...register('is_manual_total')} />
-                Gunakan total manual
-              </label>
+              <div className="rounded-lg bg-slate-50 p-3">
+                <label className="flex items-center gap-2 text-sm font-semibold text-ink">
+                  <input type="checkbox" {...register('is_manual_price')} />
+                  Harga satuan diubah manual
+                </label>
+                <p className="mt-1 text-xs leading-5 text-muted">Centang jika harga pada nota berbeda dari harga default.</p>
+              </div>
+              <div className="rounded-lg bg-slate-50 p-3">
+                <label className="flex items-center gap-2 text-sm font-semibold text-ink">
+                  <input type="checkbox" {...register('is_manual_total')} />
+                  Gunakan total manual
+                </label>
+                <p className="mt-1 text-xs leading-5 text-muted">Centang jika total akhir pada nota berbeda dari hasil perhitungan otomatis.</p>
+              </div>
             </div>
           </Card>
 
