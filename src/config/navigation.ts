@@ -15,7 +15,7 @@ export const desktopNavigation = [
   { label: 'Rekap Transaksi', path: '/transactions', icon: ReceiptText },
   { label: 'Tambah Transaksi', path: '/transactions/new', icon: PlusCircle },
   { label: 'Rekap Bulanan', path: '/monthly-report', icon: LayoutGrid },
-  { label: 'Statistik', path: '/statistics', icon: BarChart3 },
+  // { label: 'Statistik', path: '/statistics', icon: BarChart3 },
   { label: 'Layanan & Harga', path: '/services', icon: Tags },
   { label: 'Profil UMKM', path: '/profile-umkm', icon: Building2 },
   { label: 'Panduan', path: '/guide', icon: BookOpenText },
@@ -26,7 +26,7 @@ export const mobileNavigation = [
   { label: 'Dashboard', path: '/dashboard', icon: Home },
   { label: 'Rekap', path: '/transactions', icon: ReceiptText },
   { label: 'Tambah', path: '/transactions/new', icon: PlusCircle },
-  { label: 'Statistik', path: '/statistics', icon: BarChart3 },
+  // { label: 'Statistik', path: '/statistics', icon: BarChart3 },
 ];
 
 export const moreNavigation = [

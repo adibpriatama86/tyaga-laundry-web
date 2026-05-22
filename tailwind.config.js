@@ -13,7 +13,7 @@ export default {
         line: '#E2E8F0',
       },
       fontFamily: {
-        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
       },
       boxShadow: {
         soft: '0 18px 45px rgba(15, 23, 42, 0.08)',
