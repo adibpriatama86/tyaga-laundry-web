@@ -13,7 +13,7 @@ import {
 import { exportMonthlyReportExcel } from '../utils/exportExcel';
 import { exportMonthlyReportPdf } from '../utils/exportPdf';
 import { formatCurrency } from '../utils/formatCurrency';
-import { formatDate, formatMonthYear, getCurrentMonthYear, monthNames } from '../utils/formatDate';
+import { formatDate, formatMonthYear, getCurrentMonthYear, getYearRange, monthNames } from '../utils/formatDate';
 import { serviceDisplayName } from '../utils/serviceLabels';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
@@ -39,7 +39,7 @@ export function MonthlyReportPage() {
   const [filters, setFilters] = useState<ReportFilters>(defaultReportFilters);
   const report = useMonthlyReport(businessId, filters);
   const { showToast } = useToast();
-  const years = Array.from({ length: 7 }, (_, index) => new Date().getFullYear() - 4 + index);
+  const years = getYearRange();
 
   const exportPdf = () => {
     if (!business || !report.data) return;

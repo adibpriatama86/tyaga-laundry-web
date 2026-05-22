@@ -14,7 +14,7 @@ import type { ReportFilters } from '../types/models';
 import { useBusinessAccess } from '../hooks/useBusinessAccess';
 import { useMonthlyReport } from '../hooks/useMonthlyReport';
 import { formatCurrency } from '../utils/formatCurrency';
-import { formatMonthYear, getCurrentMonthYear, monthNames } from '../utils/formatDate';
+import { formatMonthYear, getCurrentMonthYear, getYearRange, monthNames } from '../utils/formatDate';
 import { Card } from '../components/ui/Card';
 import { EmptyState } from '../components/ui/EmptyState';
 import { Select } from '../components/ui/Select';
@@ -28,9 +28,18 @@ function previousMonth(month: number, year: number) {
   return month === 1 ? { month: 12, year: year - 1 } : { month: month - 1, year };
 }
 
-function percentage(current: number, previous: number) {
-  if (!previous) return null;
-  return ((current - previous) / previous) * 100;
+function describeTransactionChange(current: number, previous: number) {
+  const difference = current - previous;
+  if (difference > 0) return `${difference} transaksi lebih banyak dari bulan lalu`;
+  if (difference < 0) return `${Math.abs(difference)} transaksi lebih sedikit dari bulan lalu`;
+  return 'Tidak ada perubahan dibanding bulan lalu';
+}
+
+function describeRevenueChange(current: number, previous: number) {
+  const difference = current - previous;
+  if (difference > 0) return `${formatCurrency(difference)} lebih tinggi dari bulan lalu`;
+  if (difference < 0) return `${formatCurrency(Math.abs(difference))} lebih rendah dari bulan lalu`;
+  return 'Pendapatan sama dengan bulan lalu';
 }
 
 export function StatisticsPage() {
@@ -41,7 +50,7 @@ export function StatisticsPage() {
   const previous = previousMonth(month, year);
   const report = useMonthlyReport(businessId, filterFor(month, year));
   const previousReport = useMonthlyReport(businessId, filterFor(previous.month, previous.year));
-  const years = Array.from({ length: 7 }, (_, index) => new Date().getFullYear() - 4 + index);
+  const years = getYearRange();
 
   const dailyRevenue = useMemo(() => {
     const days = new Date(year, month, 0).getDate();
@@ -75,11 +84,16 @@ export function StatisticsPage() {
     [report.data?.byService],
   );
 
-  const transactionChange = percentage(
-    report.data?.totalTransactions ?? 0,
-    previousReport.data?.totalTransactions ?? 0,
-  );
-  const revenueChange = percentage(report.data?.totalRevenue ?? 0, previousReport.data?.totalRevenue ?? 0);
+  const transactionChangeText = previousReport.isLoading
+    ? 'Menghitung pembanding...'
+    : previousReport.isError
+      ? 'Data pembanding belum tersedia'
+      : describeTransactionChange(report.data?.totalTransactions ?? 0, previousReport.data?.totalTransactions ?? 0);
+  const revenueChangeText = previousReport.isLoading
+    ? 'Menghitung pembanding...'
+    : previousReport.isError
+      ? 'Data pembanding belum tersedia'
+      : describeRevenueChange(report.data?.totalRevenue ?? 0, previousReport.data?.totalRevenue ?? 0);
 
   return (
     <div className="space-y-5">
@@ -120,14 +134,24 @@ export function StatisticsPage() {
         <>
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             {[
-              ['Total transaksi', report.data.totalTransactions.toString()],
-              ['Total pendapatan', formatCurrency(report.data.totalRevenue)],
-              ['Total lunas', formatCurrency(report.data.paidTotal)],
-              ['Total belum lunas', formatCurrency(report.data.unpaidTotal)],
-            ].map(([label, value]) => (
-              <Card key={label} animated>
-                <p className="text-sm font-semibold text-muted">{label}</p>
-                <p className="mt-3 text-2xl font-bold text-ink">{value}</p>
+              { label: 'Total transaksi', value: report.data.totalTransactions.toString() },
+              { label: 'Total pendapatan', value: formatCurrency(report.data.totalRevenue) },
+              {
+                label: 'Total lunas',
+                value: formatCurrency(report.data.paidTotal),
+                className: 'border-emerald-100 bg-emerald-50/40',
+                valueClassName: 'text-emerald-700',
+              },
+              {
+                label: 'Total belum lunas',
+                value: formatCurrency(report.data.unpaidTotal),
+                className: 'border-orange-100 bg-orange-50/50',
+                valueClassName: 'text-orange-700',
+              },
+            ].map((item) => (
+              <Card key={item.label} animated className={item.className}>
+                <p className="text-sm font-semibold text-muted">{item.label}</p>
+                <p className={`mt-3 text-2xl font-bold ${item.valueClassName ?? 'text-ink'}`}>{item.value}</p>
               </Card>
             ))}
           </div>
@@ -137,21 +161,17 @@ export function StatisticsPage() {
             <div className="mt-4 grid gap-3 md:grid-cols-2">
               <div className="rounded-lg bg-slate-50 p-4">
                 <p className="text-sm text-muted">Perubahan total transaksi</p>
-                <p className="mt-2 text-xl font-bold text-ink">
-                  {transactionChange === null ? 'Data pembanding belum cukup' : `${transactionChange >= 0 ? '+' : ''}${transactionChange.toFixed(1)}%`}
-                </p>
+                <p className="mt-2 text-base font-bold leading-6 text-ink">{transactionChangeText}</p>
               </div>
               <div className="rounded-lg bg-slate-50 p-4">
                 <p className="text-sm text-muted">Perubahan total pendapatan</p>
-                <p className="mt-2 text-xl font-bold text-ink">
-                  {revenueChange === null ? 'Data pembanding belum cukup' : `${revenueChange >= 0 ? '+' : ''}${revenueChange.toFixed(1)}%`}
-                </p>
+                <p className="mt-2 text-base font-bold leading-6 text-ink">{revenueChangeText}</p>
               </div>
             </div>
           </Card>
 
           <div className="grid gap-4 xl:grid-cols-2">
-            <Card>
+            {/* <Card>
               <h2 className="mb-4 text-base font-bold text-ink">Pendapatan per hari</h2>
               <div className="h-80">
                 <ResponsiveContainer width="100%" height="100%">
@@ -164,7 +184,7 @@ export function StatisticsPage() {
                   </LineChart>
                 </ResponsiveContainer>
               </div>
-            </Card>
+            </Card> */}
 
             <Card>
               <h2 className="mb-4 text-base font-bold text-ink">Jumlah transaksi per layanan</h2>

@@ -39,6 +39,12 @@ export function getCurrentMonthYear() {
   return { month: now.getMonth() + 1, year: now.getFullYear() };
 }
 
+export function getYearRange(minYear = 2010, maxYear = new Date().getFullYear() + 10) {
+  const start = Math.min(minYear, maxYear);
+  const end = Math.max(minYear, maxYear);
+  return Array.from({ length: end - start + 1 }, (_, index) => start + index);
+}
+
 export function getMonthRange(month: number, year: number) {
   const start = `${year}-${String(month).padStart(2, '0')}-01`;
   const lastDay = new Date(year, month, 0).getDate();

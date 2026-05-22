@@ -25,7 +25,7 @@ import { useToast } from '../ui/Toast';
 
 const schema = z
   .object({
-    receipt_number: z.string().min(1, 'Nomor nota wajib diisi.'),
+    receipt_number: z.string(),
     date_in: z.string().min(1, 'Tanggal masuk wajib diisi.'),
     customer_name: z.string().min(1, 'Nama pelanggan wajib diisi.'),
     customer_phone: z.string().optional(),
@@ -186,7 +186,7 @@ export function TransactionForm({ businessId, services, mode = 'create', transac
             <h2 className="mb-4 text-base font-bold text-ink">Informasi Nota</h2>
             <div className="grid gap-3 sm:grid-cols-2">
               <Input label="Tanggal masuk" type="date" error={errors.date_in?.message} {...register('date_in')} />
-              <Input label="Nomor nota" placeholder="Contoh: TYG-202605-001" error={errors.receipt_number?.message} {...register('receipt_number')} />
+              <Input label="Nomor nota" placeholder="Kosongkan untuk dibuat otomatis" error={errors.receipt_number?.message} {...register('receipt_number')} />
             </div>
           </Card>
 

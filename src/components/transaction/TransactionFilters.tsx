@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ChevronDown, RotateCcw, SlidersHorizontal } from 'lucide-react';
 import type { ServiceWithPrices, TransactionFilters as Filters } from '../../types/models';
-import { monthNames } from '../../utils/formatDate';
+import { getYearRange, monthNames } from '../../utils/formatDate';
 import { cn } from '../../utils/cn';
 import { orderStatusLabels, paymentMethodLabels, paymentStatusLabels } from '../../utils/calculateTransaction';
 import { serviceDisplayName } from '../../utils/serviceLabels';
@@ -18,7 +18,7 @@ interface TransactionFiltersProps {
 
 export function TransactionFilters({ filters, services, onChange, onReset }: TransactionFiltersProps) {
   const [advancedOpen, setAdvancedOpen] = useState(false);
-  const years = Array.from({ length: 7 }, (_, index) => new Date().getFullYear() - 4 + index);
+  const years = getYearRange();
 
   return (
     <div className="rounded-lg border border-line bg-white p-4 shadow-sm">

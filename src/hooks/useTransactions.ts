@@ -44,6 +44,39 @@ async function findOrCreateCustomer(
   return created;
 }
 
+function receiptDatePart(dateIn: string) {
+  const [year, month, day] = dateIn.split('-');
+  return `${day}${month}${year}`;
+}
+
+async function generateReceiptNumber(businessId: string, dateIn: string) {
+  const prefix = `TYG-${receiptDatePart(dateIn)}-`;
+  const { data, error } = await supabase
+    .from('transactions')
+    .select('receipt_number')
+    .eq('business_id', businessId)
+    .eq('date_in', dateIn)
+    .ilike('receipt_number', `${prefix}%`);
+
+  if (error) throw error;
+
+  const existingReceipts = new Set((data ?? []).map((item) => item.receipt_number).filter(Boolean));
+  const lastSequence = (data ?? []).reduce((max, item) => {
+    const value = item.receipt_number?.startsWith(prefix) ? Number(item.receipt_number.slice(prefix.length)) : 0;
+    return Number.isInteger(value) && value > max ? value : max;
+  }, 0);
+
+  let nextSequence = lastSequence + 1;
+  let receiptNumber = `${prefix}${String(nextSequence).padStart(3, '0')}`;
+
+  while (existingReceipts.has(receiptNumber)) {
+    nextSequence += 1;
+    receiptNumber = `${prefix}${String(nextSequence).padStart(3, '0')}`;
+  }
+
+  return receiptNumber;
+}
+
 function buildTransactionPayload(
   businessId: string,
   values: TransactionFormValues,
@@ -146,7 +179,14 @@ export function useTransactionMutations(businessId: string | null, services: Ser
 
       const phone = values.customer_phone?.trim() || null;
       const customer = await findOrCreateCustomer(businessId, values.customer_name, phone);
-      const payload = buildTransactionPayload(businessId, values, service, customer, user?.id ?? null);
+      const receiptNumber = values.receipt_number.trim() || await generateReceiptNumber(businessId, values.date_in);
+      const payload = buildTransactionPayload(
+        businessId,
+        { ...values, receipt_number: receiptNumber },
+        service,
+        customer,
+        user?.id ?? null,
+      );
 
       const { data, error } = await supabase.from('transactions').insert(payload).select().single();
       if (error) throw error;

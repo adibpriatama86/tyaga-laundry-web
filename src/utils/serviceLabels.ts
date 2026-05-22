@@ -13,9 +13,15 @@ const serviceNameByCode: Record<string, string> = {
 
 export function serviceDisplayName(code?: string | null, fallback?: string | null) {
   const normalizedCode = code?.trim().toUpperCase();
+  const fallbackName = fallback?.trim();
+
+  if (fallbackName && fallbackName.toUpperCase() !== normalizedCode) {
+    return fallbackName;
+  }
+
   if (normalizedCode && serviceNameByCode[normalizedCode]) {
     return serviceNameByCode[normalizedCode];
   }
 
-  return fallback?.trim() || '-';
+  return fallbackName || '-';
 }

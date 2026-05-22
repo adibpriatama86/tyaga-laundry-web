@@ -43,7 +43,7 @@ export const router = createBrowserRouter([
       { path: 'transactions', element: <TransactionsPage /> },
       { path: 'transactions/new', element: <AddTransactionPage /> },
       { path: 'monthly-report', element: <MonthlyReportPage /> },
-      // { path: 'statistics', element: <StatisticsPage /> },
+      { path: 'statistics', element: <StatisticsPage /> },
       { path: 'services', element: <ServicesPage /> },
       { path: 'profile-umkm', element: <ProfileUmkmPage /> },
       { path: 'guide', element: <GuidePage /> },

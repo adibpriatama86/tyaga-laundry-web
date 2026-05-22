@@ -32,3 +32,17 @@ Revisi ini dilakukan agar aplikasi lebih sesuai dengan kebutuhan UMKM, lebih mud
 - Membersihkan wording demo/dev/development dari UI publik.
 - Merapikan microcopy halaman auth agar lebih siap digunakan sebagai versi publik.
 - Memastikan aplikasi tetap buildable sebelum publish.
+
+## Tambah Layanan
+
+- Menambahkan tombol dan modal Tambah Layanan pada halaman Layanan & Harga.
+- Menambahkan insert layanan baru ke tabel services dan harga per durasi ke tabel service_prices.
+- Menambahkan validasi kode layanan uppercase, harga tidak negatif, dan pencegahan kode layanan duplikat.
+- Mengelompokkan tampilan layanan menjadi Kiloan dan Satuan / Item.
+
+## Final Polishing Statistik dan Nota
+
+- Menambahkan warna subtle untuk ringkasan Total Lunas dan Total Belum Lunas pada halaman Statistik.
+- Mengubah perbandingan bulan sebelumnya dari persentase menjadi kalimat jumlah transaksi dan nominal rupiah.
+- Membuat filter tahun dinamis dari 2010 sampai 10 tahun ke depan untuk Statistik, Rekap Bulanan, dan Rekap Transaksi.
+- Menambahkan auto generate nomor nota harian saat Nomor Nota dikosongkan pada Tambah Transaksi.
